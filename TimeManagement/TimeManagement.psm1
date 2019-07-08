@@ -23,17 +23,44 @@ Foreach($import in @($Public + $Private + $Classes))
     }
 }
 
-# Global variables for the AWM object and Context GUI form.
-$Global:ActiveWindowMonitor = $null
-$Global:AWMContextForm = $null
+# Module variables for the AWM object and Context GUI form.
+$Script:ActiveWindowMonitor = $null
+$Script:AWMContextForm = $null
 
 # The current context to be written with activities.
-$Global:ActivityContext = "Initial Startup"
+$Script:ActivityContext = "Initial Startup"
+
+# A list of context currently available.
+$Script:ContextData = @()
+
+# Create an Options variable to store common options in.
+$Script:TMOptions = @{}
+$Script:TMOptions.DataFolder = "C:\Users\brent.wright.WRIGHT.000\AppData\Roaming\Microsoft\Windows\PowerShell\TimeManagement\"
+$Script:TMOptions.ContextData = Join-Path $Script:TMOptions.DataFolder "ContextData.csv"
+$Script:TMOptions.ReportFolder = Join-Path $Script:TMOptions.DataFolder "Reports\"
+$Script:TMOptions.ReportName = { "TMReport_{0:yyyyMMdd}.csv" -f $(Get-Date) }
+$Script:TMOptions.HideContextOlderThanDays = 7
+$Script:TMOptions.Runspaces = @()
+
+# Create the folder structure if it doesn't already exist.
+if ( -not (Test-Path -Path $Script:TMOptions.DataFolder -PathType Container)) {
+    New-Item -Path $Script:TMOptions.DataFolder -ItemType Directory -Force | Out-Null
+}
+
+if ( -not (Test-Path -Path $Script:TMOptions.ReportFolder -PathType Container)) {
+    New-Item -Path $Script:TMOptions.ReportFolder -ItemType Directory -Force | Out-Null
+}
 
 # A queue to hold transformed activities that are ready to be stored in a file.
-#$Script:ActivityQueue = [System.Collections.Queue]::Synchronized( $(new-object System.Collections.Queue) )
+$Global:ActivityQueue = [System.Collections.Queue]::Synchronized( $(new-object System.Collections.Queue) )
+$Global:RecentEventObj = new-object System.Collections.Queue
 
 # Import assembly for GUI Forms.
 Add-Type -AssemblyName System.Windows.Forms
 
+# Export the public functions for use.
+#$($Public.Basename) | Export-ModuleMember
 $($Public.Basename + $Private.Basename) | Export-ModuleMember
+
+# Load context data initially
+Import-ContextData

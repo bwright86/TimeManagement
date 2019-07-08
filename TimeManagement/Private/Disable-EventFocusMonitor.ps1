@@ -1,6 +1,6 @@
 
 
-Function Enable-EventFocusMonitor {
+Function Disable-EventFocusMonitor {
     [CmdletBinding()]
     Param (    )
 
@@ -8,8 +8,8 @@ Function Enable-EventFocusMonitor {
 
     Process {
 
-        if ($Global:ActiveWindowMonitor.Enabled()) {
-            $Global:ActiveWindowMonitor.Disable()
+        if ($Script:ActiveWindowMonitor.Enabled) {
+            $Script:ActiveWindowMonitor.Disable()
             Write-Verbose "Window focus monitoring has been disabled."
         } else {
 

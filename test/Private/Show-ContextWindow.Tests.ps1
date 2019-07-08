@@ -10,13 +10,17 @@ $ModulePath = "$PSScriptRoot\..\..\$ModuleName"
 if (Get-Module $ModuleName) {
     Remove-Module $ModuleName
 }
-Import-Module $ModulePath
+Import-Module $ModulePath -Verbose
+
+#$VerbosePreference = "Continue"
 
 InModuleScope $ModuleName {
-Describe 'Module Manifest Tests' {
-    It 'HelperFunction returns "This is a test"' {
-        $test = HelperFunction
-        $test | Should -Be "This is a test"
+Describe 'Show-ContextWindow' {
+
+    It "Form displays" {
+        Show-ContextWindow -Verbose
+
+        $true | Should -Be $true
     }
 }
 }

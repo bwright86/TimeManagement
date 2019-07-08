@@ -8,10 +8,10 @@ function Enable-EventFocusMonitor {
 
     Process {
 
-        if ($Global:ActiveWindowMonitor.Enabled()) {
+        if ( $Script:ActiveWindowMonitor.Enabled ) {
             Write-Verbose "Window focus monitoring is already enabled."
         } else {
-            $Global:ActiveWindowMonitor.enable()
+            $Script:ActiveWindowMonitor.Enable()
             Write-Verbose "Enabling Window focus monitoring."
         }
 

@@ -12,20 +12,19 @@ function Register-EventFocusMonitor {
 
     Process {
 
-        if ($global:ActiveWindowMonitor -eq $null -or $Force) {
-
-            # Instantiate object to monitor active windows, store in the global variable.
-            $global:ActiveWindowMonitor = New-Object System.Diagnostics.ActiveWindowWatcher
+        if ($null -ne $Script:ActiveWindowMonitor) {
 
             $registerParams = @{
-                InputObject = $global:ActiveWindowMonitor
+                InputObject = $Script:ActiveWindowMonitor
                 EventName   = "Changed"
-                Action      = { Receive-EventFocusActivity $global:ActiveWindowMonitor }
+                Action      = { Receive-EventFocusActivity -CurrentEvent $Event }
             }
-            $job = Register-ObjectEvent @registerParams
+            $Script:TMOptions.WatcherJob = $(Register-ObjectEvent @registerParams)
+
+            "WatcherJob count: $($Script:TMOptions.WatcherJob.count)" | Write-Verbose
 
         } else {
-            Write-Verbose "A Window Focus monitor was already created. Set it to `$null or use -Force to overwrite it."
+            Write-Warning "An Active Window Focus monitor was already created. If there is an issue, use -Force to create a new one."
         }
 
     }

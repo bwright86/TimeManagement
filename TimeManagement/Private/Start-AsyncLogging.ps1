@@ -1,0 +1,9 @@
+$scriptblock = {
+    try {
+
+    } catch {
+
+    } finally {
+
+    }
+}
